@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string>;
@@ -12,13 +12,18 @@ class ApiClient {
   }
 
   private buildUrl(path: string, params?: Record<string, string>): string {
-    const url = new URL(path, this.baseUrl);
+    let urlStr = this.baseUrl ? `${this.baseUrl}${path}` : path;
     if (params) {
+      const searchParams = new URLSearchParams();
       Object.entries(params).forEach(([key, value]) => {
-        url.searchParams.append(key, value);
+        searchParams.append(key, value);
       });
+      const qs = searchParams.toString();
+      if (qs) {
+        urlStr += `?${qs}`;
+      }
     }
-    return url.toString();
+    return urlStr;
   }
 
   async request<T>(path: string, options: RequestOptions = {}): Promise<T> {
