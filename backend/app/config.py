@@ -20,7 +20,7 @@ class Settings(BaseSettings):
 
     redis_url: str = "redis://localhost:6379/0"
 
-    cors_origins: list[str] = ["http://localhost:3000", "http://localhost:5173"]
+    cors_origins: list[str] = ["*"]
 
     openai_api_key: str = ""
     openai_model: str = "gpt-4"
