@@ -1,0 +1,29 @@
+---
+description: OPC Scaffold core development standards from AGENTS.md
+alwaysApply: true
+---
+
+# OPC Development Standards
+
+Follow AGENTS.md. Before coding: analyze architecture, propose design for non-trivial changes, work one module per sprint.
+
+## Code Rules
+
+- Production-grade runnable code only
+- Config via environment variables
+- Prompts in `/prompts/` (YAML preferred)
+- AI output as structured JSON
+- API under `/api/v1/` with unified response envelope
+- DB changes via Alembic
+- Background tasks via Celery
+
+## Paths
+
+- Backend API: `backend/app/api/v1/endpoints/`
+- Frontend: `apps/web/src/`
+- AI service: `services/ai/`
+- Workers: `workers/tasks/`
+- Shared TS types: `packages/shared-types/`
+- Agent roles: `agents/roles/`
+
+Run `make test` before claiming completion.
