@@ -35,6 +35,8 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     log_format: str = "json"
 
+    prompts_dir: str = "../prompts"
+
     @property
     def is_development(self) -> bool:
         return self.app_env == "development"

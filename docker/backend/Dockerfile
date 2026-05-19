@@ -30,6 +30,8 @@ COPY services ./services
 COPY packages ./packages
 COPY config ./config
 COPY prompts ./prompts
+COPY agents ./agents
+COPY workers ./workers
 
 EXPOSE 8000
 

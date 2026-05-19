@@ -1,17 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Moon, Sun, Activity, Database, Cpu, Layers } from "lucide-react";
+import { Moon, Sun, Activity, Database, Cpu, Layers, Bot } from "lucide-react";
+import type { APIResponse, HealthData } from "@opc/shared-types";
 import { useThemeStore } from "@/stores/theme";
 import { apiClient } from "@/lib/api";
-
-interface HealthData {
-  status: string;
-  app_name: string;
-  version: string;
-  environment: string;
-  timestamp: string;
-}
 
 export default function Home() {
   const { isDark, toggle } = useThemeStore();
@@ -20,8 +13,8 @@ export default function Home() {
 
   useEffect(() => {
     apiClient
-      .get<{ success: boolean; data: HealthData }>("/api/v1/health")
-      .then((res) => setHealth(res.data))
+      .get<APIResponse<HealthData>>("/api/v1/health")
+      .then((res) => setHealth(res.data ?? null))
       .catch(() => setHealth(null))
       .finally(() => setLoading(false));
   }, []);
@@ -41,6 +34,11 @@ export default function Home() {
       icon: <Cpu className="h-6 w-6" />,
       title: "AI Integration",
       description: "OpenAI-compatible, prompt management, structured output",
+    },
+    {
+      icon: <Bot className="h-6 w-6" />,
+      title: "Multi-Agent Workflow",
+      description: "8 specialized agent roles + orchestrator in /agents",
     },
     {
       icon: <Activity className="h-6 w-6" />,

@@ -31,6 +31,9 @@
 - `services/ai/` → AI client and prompt management (depends on `backend/app/config`)
 - `workers/` → Background task processing (depends on `backend/app/config`)
 - `packages/shared/` → Shared utilities (no dependencies)
+- `packages/shared-types/` → TypeScript types shared with frontend
+- `agents/` → Multi-Agent role definitions and orchestrator workflow
+- `prompts/` → YAML prompt templates with structured JSON output schemas
 - `config/` → Centralized configuration (re-exports from `backend/app/config`)
 
 ## Scaling Strategy

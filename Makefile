@@ -16,13 +16,13 @@ migrate: ## Run database migrations (usage: make migrate or make migrate CMD=gen
 	@bash scripts/migrate.sh $(CMD) $(NAME)
 
 dev-backend: ## Start backend dev server
-	cd backend && poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+	cd backend && PYTHONPATH=.. poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 dev-frontend: ## Start frontend dev server
 	cd apps/web && npm run dev
 
 dev-worker: ## Start Celery worker
-	cd backend && poetry run celery -A workers.celery_app worker --loglevel=info
+	cd backend && PYTHONPATH=.. poetry run celery -A workers.celery_app worker --loglevel=info
 
 docker-up: ## Start all services with Docker
 	docker compose up -d

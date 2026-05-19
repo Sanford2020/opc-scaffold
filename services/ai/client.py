@@ -31,6 +31,17 @@ class AIClient:
         max_tokens: int = 2000,
         response_format: dict[str, str] | None = None,
     ) -> dict[str, Any]:
+        if not self.api_key:
+            user_msg = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+            logger.warning("ai_api_key_missing", model=self.model)
+            return {
+                "content": f'{{"summary":"Mock response","actions":["Review output"],"risks":[]}}'
+                if response_format
+                else f"[Mock AI] Received: {user_msg[:200]}",
+                "model": "mock",
+                "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+            }
+
         try:
             kwargs: dict[str, Any] = {
                 "model": model or self.model,

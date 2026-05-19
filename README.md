@@ -1,150 +1,101 @@
 # OPC Scaffold
 
-Production-grade monorepo scaffold for building AI-driven one-person company software assets.
+**Universal AI Software Company** — 生产级 monorepo 通用脚手架，整合远程 Devin 工程化 + 本地 Multi-Agent / 结构化 Prompt 优势。
 
-## Features
+## 特性一览
 
-- **Modular Monorepo** - Clean separation of backend, frontend, services, workers
-- **FastAPI Backend** - Async, typed, with structured error handling and logging
-- **Next.js Frontend** - React 18, TypeScript, Tailwind CSS, dark mode support
-- **Database Migrations** - SQLAlchemy 2.0 + Alembic with naming conventions
-- **AI Integration** - OpenAI-compatible client, prompt management, structured JSON output
-- **Async Workers** - Celery + Redis for background task processing
-- **Docker Ready** - Full docker-compose with PostgreSQL, Redis, all services
-- **CI/CD** - GitHub Actions for lint, test, and Docker build
-- **Automation** - Makefile + shell scripts for common operations
+| 模块 | 能力 |
+|------|------|
+| **Backend** | FastAPI · Poetry · SQLAlchemy 2 · Alembic · 统一错误处理 · structlog |
+| **Frontend** | Next.js 14 · Tailwind · 深色模式 · Zustand · Vitest |
+| **Workers** | Celery + Redis · 优先级队列 · Beat 调度 |
+| **AI** | OpenAI-compatible · YAML Prompt · JSON 结构化输出 · `/api/v1/ai/chat` |
+| **Agents** | 8 角色 + Orchestrator（`/agents/`） |
+| **Shared** | `@opc/shared-types` 前后端类型共享 |
+| **Infra** | Docker Compose · GitHub Actions CI · Makefile |
 
-## Quick Start
-
-### Prerequisites
-
-- Python 3.11+
-- Node.js 20+
-- Docker & Docker Compose
-- Poetry (Python package manager)
-
-### Setup
+## 快速开始
 
 ```bash
-# Clone the repository
 git clone https://github.com/Sanford2020/opc-scaffold.git
 cd opc-scaffold
+git checkout devin/1779111789-scaffold-init   # 或合并后的 main
 
-# Run setup script (installs all dependencies)
 make setup
+docker compose up -d db redis
+make dev-backend    # Terminal 1 → http://localhost:8000/docs
+make dev-frontend   # Terminal 2 → http://localhost:3000
+```
 
-# Or use Docker for everything
+或一键 Docker：
+
+```bash
+cp backend/.env.example backend/.env
 docker compose up
 ```
 
-### Development
-
-```bash
-# Start infrastructure (DB + Redis)
-docker compose up -d db redis
-
-# Start backend (http://localhost:8000)
-make dev-backend
-
-# Start frontend (http://localhost:3000)
-make dev-frontend
-
-# Start worker
-make dev-worker
-```
-
-### Testing
-
-```bash
-make test       # Run all tests
-make lint       # Run all linters
-```
-
-### Database
-
-```bash
-make migrate                                    # Run migrations
-make migrate CMD=generate NAME=add_users_table  # Generate new migration
-make migrate CMD=history                        # View migration history
-```
-
-## Project Structure
+## 项目结构
 
 ```
 opc-scaffold/
-├── apps/
-│   └── web/                    # Next.js 14 frontend
-│       ├── src/
-│       │   ├── app/            # App router pages
-│       │   ├── components/     # UI & layout components
-│       │   ├── lib/            # API client, utilities
-│       │   ├── hooks/          # Custom React hooks
-│       │   ├── stores/         # Zustand state management
-│       │   └── types/          # TypeScript types
-│       └── __tests__/          # Frontend tests
-├── backend/
-│   ├── app/
-│   │   ├── api/v1/endpoints/   # API endpoints (versioned)
-│   │   ├── core/               # Error handling, logging, security
-│   │   ├── db/                 # Database, sessions, migrations
-│   │   ├── models/             # SQLAlchemy models
-│   │   ├── schemas/            # Pydantic schemas
-│   │   └── services/           # Business logic
-│   └── tests/                  # Backend tests
-├── services/
-│   └── ai/                     # AI client, prompt management
-│       ├── prompts/            # Prompt templates
-│       └── schemas/            # AI request/response schemas
-├── workers/
-│   └── tasks/                  # Celery task definitions
+├── apps/web/                 # Next.js 前端
+├── backend/                  # FastAPI (Poetry)
+├── services/ai/              # AI 客户端 + PromptManager
+├── workers/                  # Celery tasks
 ├── packages/
-│   └── shared/                 # Shared utilities
-├── config/                     # Centralized settings & constants
-├── scripts/                    # Automation scripts
-├── docker/                     # Dockerfiles per service
-├── docs/                       # Documentation
-├── tests/e2e/                  # End-to-end tests
-├── prompts/                    # AI prompt template files
-├── .github/workflows/          # CI/CD pipelines
-├── docker-compose.yml          # Service orchestration
-├── Makefile                    # Development commands
-└── AGENTS.md                   # Development standards
+│   ├── shared-types/         # TypeScript 共享类型
+│   └── shared/               # Python 共享工具
+├── agents/                   # Multi-Agent 角色 + 编排器
+├── prompts/                  # YAML Prompt（default, code_review…）
+├── config/                   # 集中配置
+├── scripts/                  # setup / test / lint / migrate
+├── docker/                   # 各服务 Dockerfile
+├── docs/                     # 架构 / API / 部署文档
+└── AGENTS.md                 # AI 开发规范（必读）
 ```
 
-## Architecture
+## API 示例
 
-### Backend (FastAPI)
+```bash
+# 健康检查
+curl http://localhost:8000/api/v1/health
 
-- **Config**: Environment-variable driven via `pydantic-settings`
-- **API**: Versioned routes (`/api/v1/`), dependency injection
-- **Error Handling**: Unified `AppError` hierarchy with structured JSON responses
-- **Logging**: Structured logging via `structlog` (JSON in production, console in dev)
-- **Database**: Async SQLAlchemy 2.0 sessions with proper lifecycle management
-- **Security**: Password hashing, token generation utilities
+# AI 对话（无 API Key 时返回 Mock）
+curl -X POST http://localhost:8000/api/v1/ai/chat \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"分析这个项目","prompt_template":"default"}'
 
-### Frontend (Next.js)
+# 列出 Prompt 模板
+curl http://localhost:8000/api/v1/ai/prompts
+```
 
-- **Routing**: Next.js App Router
-- **Styling**: Tailwind CSS with dark mode support
-- **State**: Zustand with persistence
-- **API Client**: Type-safe HTTP client with error handling
-- **Components**: Composable UI components (Button, etc.)
+## 开发规范
 
-### AI Service
+所有开发遵循 [AGENTS.md](./AGENTS.md)：
 
-- **Client**: OpenAI-compatible async client (works with any OpenAI-compatible API)
-- **Prompts**: File-based template system with variable substitution
-- **Output**: Structured JSON output mode for reliable parsing
+1. 先分析 → 再设计 → Sprint 迭代 → 测试验证
+2. Prompt 放 `/prompts/*.yaml`，Agent 角色放 `/agents/roles/`
+3. 新 API 走 `/api/v1/`，响应用统一 envelope
+4. 完成前运行 `make test`
 
-### Workers (Celery)
+## 文档
 
-- **Tasks**: Auto-discovered from `workers/tasks/`
-- **Queues**: Configurable priority queues (default, high_priority)
-- **Progress**: Task progress tracking via Celery state updates
+- [架构说明](./docs/architecture.md)
+- [API 文档](./docs/api.md)
+- [部署指南](./docs/deployment.md)
+- [Agent 编排](./agents/orchestrator.md)
 
-## Environment Variables
+## 基于本脚手架创建产品
 
-See `.env.example` files in `backend/` and `apps/web/` for all configuration options.
+```bash
+# Sprint 1: 数据模型 + 迁移
+# Sprint 2: Backend API
+# Sprint 3: Frontend 页面
+# Sprint 4: Celery 异步任务
+# Sprint 5: CI/CD + E2E
+```
+
+每个 Sprint 保持系统可运行 — 这是 OPC 方法论的核心。
 
 ## License
 

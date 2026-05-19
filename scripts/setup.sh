@@ -27,6 +27,14 @@ npm install
 echo "Frontend dependencies installed"
 cd ../..
 
+# Shared types
+echo ""
+echo "--- Setting up Shared Types ---"
+cd packages/shared-types
+npm install
+echo "Shared types ready"
+cd ../..
+
 echo ""
 echo "=== Setup Complete ==="
 echo ""
