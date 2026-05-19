@@ -1,6 +1,6 @@
+import sys
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-import sys
 from pathlib import Path
 
 # Repo root on PYTHONPATH for `services/` and `packages/`
@@ -8,18 +8,18 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, HTTPException  # noqa: E402
+from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 
-from app.api.router import api_router
-from app.config import settings
-from app.core.errors import (
+from app.api.router import api_router  # noqa: E402
+from app.config import settings  # noqa: E402
+from app.core.errors import (  # noqa: E402
     AppError,
     app_error_handler,
     http_error_handler,
     unhandled_error_handler,
 )
-from app.core.logging import get_logger, setup_logging
+from app.core.logging import get_logger, setup_logging  # noqa: E402
 
 logger = get_logger(__name__)
 

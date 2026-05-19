@@ -1,5 +1,4 @@
 from pydantic import BaseModel, Field
-
 from services.ai.client import ai_client
 from services.ai.prompts.base import prompt_manager
 
@@ -34,7 +33,8 @@ async def run_chat(body: ChatRequest) -> ChatResponseData:
     if body.prompt_template:
         try:
             definition = prompt_manager.load_yaml(body.prompt_template)
-            if definition.output_format and definition.output_format.get("type") == "json_schema":
+            fmt = definition.output_format
+            if fmt and fmt.get("type") == "json_schema":
                 response_format = {"type": "json_object"}
         except FileNotFoundError:
             pass
