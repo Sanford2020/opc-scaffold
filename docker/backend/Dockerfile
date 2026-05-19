@@ -16,8 +16,7 @@ RUN pip install poetry && \
 FROM base AS deps
 
 COPY backend/pyproject.toml backend/poetry.lock* ./
-RUN poetry install --no-dev --no-interaction --no-ansi 2>/dev/null || \
-    poetry install --without dev --no-interaction --no-ansi
+RUN poetry install --without dev --no-root --no-interaction --no-ansi
 
 FROM base AS production
 
