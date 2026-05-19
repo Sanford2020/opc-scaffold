@@ -4,8 +4,10 @@ WORKDIR /app
 
 FROM base AS deps
 
+COPY packages/shared-types /shared-types
 COPY apps/web/package.json apps/web/package-lock.json* ./
-RUN npm ci 2>/dev/null || npm install
+RUN sed -i 's|file:../../packages/shared-types|file:/shared-types|g' package.json && \
+    npm install --ignore-scripts
 
 FROM base AS builder
 
