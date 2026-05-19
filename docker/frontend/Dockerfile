@@ -4,15 +4,19 @@ WORKDIR /app
 
 FROM base AS deps
 
-COPY packages/shared-types /shared-types
-COPY apps/web/package.json apps/web/package-lock.json* ./
-RUN sed -i 's|file:../../packages/shared-types|file:/shared-types|g' package.json && \
-    npm install --ignore-scripts
+# Maintain monorepo layout so file: references resolve
+WORKDIR /monorepo
+COPY packages/shared-types ./packages/shared-types
+COPY apps/web/package.json apps/web/package-lock.json* ./apps/web/
+WORKDIR /monorepo/apps/web
+RUN npm install --ignore-scripts
 
 FROM base AS builder
 
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /monorepo/apps/web/node_modules ./node_modules
 COPY apps/web .
+# Replace symlink with actual package so build can resolve @opc/shared-types
+COPY packages/shared-types ./node_modules/@opc/shared-types
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
